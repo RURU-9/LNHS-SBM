@@ -1,0 +1,964 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>SBM Dimensions, Indicators and MOVs</title>
+    <style>
+      :root {
+        --bg: #f3fbf6;
+        --panel: #fff;
+        --ink: #10261b;
+        --muted: #587064;
+        --line: #cfe3d7;
+        --brand: #10ae54;
+        --brand2: #087d3d;
+        --sky: #5193ea;
+        --soft: #e7f7ed;
+        --accent: #ffe71a;
+        --shadow: 0 12px 35px rgba(8, 83, 43, 0.13);
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family:
+          Inter,
+          ui-sans-serif,
+          system-ui,
+          -apple-system,
+          "Segoe UI",
+          sans-serif;
+        background: linear-gradient(145deg, #eaf8ef, #fffef2 48%, #eaf3ff);
+        color: var(--ink);
+        min-height: 100vh;
+      }
+      button,
+      input {
+        font: inherit;
+      }
+      .app {
+        width: 100%;
+        max-width: 1450px;
+        margin: auto;
+        padding: 28px 32px 48px;
+      }
+      .hero {
+        background: linear-gradient(
+          125deg,
+          var(--brand2),
+          var(--brand) 58%,
+          var(--sky)
+        );
+        color: #fff;
+        border-radius: 24px;
+        padding: 30px;
+        box-shadow: var(--shadow);
+        position: relative;
+        overflow: hidden;
+      }
+      .hero-content {
+        position: relative;
+        z-index: 1;
+        padding-right: 190px;
+      }
+      .school-logo {
+        position: absolute;
+        z-index: 2;
+        top: 24px;
+        right: 30px;
+        width: 145px;
+        height: 145px;
+        object-fit: contain;
+        filter: drop-shadow(0 8px 16px rgba(4, 18, 45, 0.3));
+      }
+      .hero:after {
+        content: "";
+        position: absolute;
+        width: 260px;
+        height: 260px;
+        border-radius: 50%;
+        background: rgba(255, 231, 26, 0.2);
+        right: -70px;
+        top: -120px;
+      }
+      .eyebrow {
+        text-transform: uppercase;
+        letter-spacing: 0.14em;
+        font-size: 0.75rem;
+        font-weight: 800;
+        opacity: 0.78;
+      }
+      .hero h1 {
+        font-size: clamp(1.8rem, 4vw, 3rem);
+        line-height: 1.08;
+        margin: 0.35rem 0 0.65rem;
+        max-width: 800px;
+      }
+      .hero p {
+        margin: 0;
+        max-width: 720px;
+        color: #effff4;
+      }
+      .toolbar {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        margin: 22px 0 14px;
+        flex-wrap: wrap;
+      }
+      .search {
+        flex: 1;
+        min-width: 240px;
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 13px 16px;
+        outline: none;
+        box-shadow: 0 4px 16px rgba(24, 45, 82, 0.05);
+      }
+      .search:focus {
+        border-color: #50bb7a;
+        box-shadow: 0 0 0 4px rgba(16, 174, 84, 0.14);
+      }
+      .homebtn {
+        border: 0;
+        background: var(--brand);
+        color: #fff;
+        padding: 13px 18px;
+        border-radius: 14px;
+        font-weight: 700;
+        cursor: pointer;
+      }
+      .drivebtn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 46px;
+        padding: 13px 18px;
+        border: 1px solid #377fd5;
+        border-radius: 14px;
+        background: var(--sky);
+        color: #fff;
+        font-weight: 700;
+        text-decoration: none;
+        white-space: nowrap;
+        box-shadow: 0 4px 16px rgba(55, 127, 213, 0.18);
+        transition: 0.18s ease;
+      }
+      .drivebtn:hover {
+        background: #367fd2;
+        transform: translateY(-1px);
+      }
+      .drivebtn:focus-visible {
+        outline: 3px solid rgba(81, 147, 234, 0.3);
+        outline-offset: 2px;
+      }
+      .crumbs {
+        font-size: 0.9rem;
+        color: var(--muted);
+        margin: 12px 2px 18px;
+      }
+      .crumbs button {
+        border: 0;
+        background: none;
+        color: var(--brand);
+        font-weight: 700;
+        padding: 0;
+        cursor: pointer;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 22px;
+      }
+      .card {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        padding: 28px;
+        text-align: left;
+        cursor: pointer;
+        box-shadow: 0 5px 18px rgba(24, 45, 82, 0.05);
+        transition: 0.2s ease;
+        min-height: 210px;
+      }
+      .card:hover {
+        transform: translateY(-3px);
+        border-color: #68c88d;
+        box-shadow: var(--shadow);
+      }
+      .card .count {
+        display: inline-flex;
+        background: var(--soft);
+        color: var(--brand);
+        padding: 5px 9px;
+        border-radius: 999px;
+        font-size: 0.78rem;
+        font-weight: 800;
+      }
+      .card h2 {
+        font-size: 1.35rem;
+        margin: 22px 0 8px;
+      }
+      .card p {
+        color: var(--muted);
+        margin: 0;
+        font-size: 1rem;
+        line-height: 1.5;
+      }
+      .indicator-list {
+        display: grid;
+        gap: 13px;
+      }
+      .indicator {
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        overflow: hidden;
+        box-shadow: 0 4px 14px rgba(24, 45, 82, 0.04);
+      }
+      .indicator-head {
+        width: 100%;
+        border: 0;
+        background: #fff;
+        padding: 18px 20px;
+        display: flex;
+        gap: 14px;
+        align-items: center;
+        text-align: left;
+        cursor: pointer;
+      }
+      .num {
+        flex: 0 0 38px;
+        height: 38px;
+        border-radius: 12px;
+        background: var(--soft);
+        display: grid;
+        place-items: center;
+        color: var(--brand2);
+        font-weight: 800;
+      }
+      .indicator-title {
+        font-weight: 800;
+        flex: 1;
+      }
+      .chev {
+        font-size: 1.25rem;
+        color: var(--muted);
+        transition: 0.2s;
+      }
+      .indicator.open .chev {
+        transform: rotate(90deg);
+      }
+      .details {
+        display: none;
+        border-top: 1px solid var(--line);
+        padding: 20px;
+        background: #fbfcfe;
+      }
+      .indicator.open .details {
+        display: grid;
+        gap: 18px;
+      }
+      .section-label {
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+        color: var(--muted);
+        font-weight: 900;
+        margin-bottom: 7px;
+      }
+      .sub {
+        font-size: 1.04rem;
+        line-height: 1.5;
+      }
+      .movs {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+      .pill {
+        background: #fffbd2;
+        border: 1px solid #ead429;
+        color: #514900;
+        padding: 8px 11px;
+        border-radius: 999px;
+        font-size: 0.9rem;
+        font-weight: 650;
+        cursor: pointer;
+        transition: 0.18s;
+      }
+      .pill:hover {
+        background: #fff078;
+        transform: translateY(-1px);
+      }
+      .upload-wrap {
+        max-width: 760px;
+        margin: 0 auto;
+      }
+      .upload-card {
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 20px;
+        padding: 24px;
+        box-shadow: var(--shadow);
+      }
+      .upload-title {
+        margin: 0 0 8px;
+        font-size: 1.45rem;
+      }
+      .upload-context {
+        background: var(--soft);
+        border-radius: 14px;
+        padding: 14px;
+        margin: 16px 0 22px;
+      }
+      .upload-context div + div {
+        margin-top: 6px;
+      }
+      .field {
+        display: grid;
+        gap: 7px;
+        margin-top: 16px;
+      }
+      .field label {
+        font-weight: 750;
+      }
+      .field input,
+      .field textarea {
+        width: 100%;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 12px 13px;
+        background: #fff;
+        outline: none;
+      }
+      .field input:focus,
+      .field textarea:focus {
+        border-color: #50bb7a;
+        box-shadow: 0 0 0 4px rgba(16, 174, 84, 0.14);
+      }
+      .field textarea {
+        min-height: 110px;
+        resize: vertical;
+      }
+      .filebox {
+        border: 2px dashed #b7c7dc;
+        border-radius: 16px;
+        padding: 22px;
+        text-align: center;
+        background: #fbfcfe;
+      }
+      .filebox input {
+        margin-top: 12px;
+      }
+      .selected-files {
+        margin: 12px 0 0;
+        padding-left: 20px;
+        color: var(--muted);
+      }
+      .actions {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-top: 22px;
+      }
+      .primary,
+      .secondary {
+        border: 0;
+        border-radius: 12px;
+        padding: 12px 17px;
+        font-weight: 800;
+        cursor: pointer;
+      }
+      .primary {
+        background: var(--brand);
+        color: #fff;
+      }
+      .secondary {
+        background: #e9eef6;
+        color: var(--ink);
+      }
+      .notice {
+        margin-top: 16px;
+        padding: 12px 14px;
+        border-radius: 12px;
+        background: #fff7e6;
+        border: 1px solid #f4d393;
+        color: #6d4808;
+        font-size: 0.9rem;
+      }
+      .success {
+        margin-top: 16px;
+        padding: 12px 14px;
+        border-radius: 12px;
+        background: #eaf7ee;
+        border: 1px solid #aad7b7;
+        color: #1f6633;
+        display: none;
+      }
+      .empty {
+        padding: 45px;
+        text-align: center;
+        background: #fff;
+        border: 1px dashed #b9c6d8;
+        border-radius: 18px;
+        color: var(--muted);
+      }
+      .footer {
+        text-align: center;
+        color: var(--muted);
+        font-size: 0.9rem;
+        line-height: 1.6;
+        margin-top: 34px;
+        padding: 24px 18px;
+        border-top: 1px solid var(--line);
+      }
+      .footer-title {
+        color: var(--brand2);
+        font-weight: 800;
+        font-size: 1rem;
+      }
+      .footer-meta {
+        margin-top: 4px;
+      }
+      .footer-credit {
+        margin-top: 8px;
+        font-size: 0.78rem;
+        opacity: 0.75;
+      }
+      @media (min-width: 1051px) and (min-height: 800px) {
+        body.home-view .app {
+          padding-top: 20px;
+          padding-bottom: 14px;
+        }
+        body.home-view .hero {
+          padding-top: 24px;
+          padding-bottom: 24px;
+        }
+        body.home-view .toolbar {
+          margin-top: 18px;
+        }
+        body.home-view .card {
+          min-height: 185px;
+        }
+        body.home-view .card h2 {
+          margin-top: 18px;
+        }
+        body.home-view .footer {
+          margin-top: 30px;
+          padding-top: 12px;
+          padding-bottom: 8px;
+        }
+      }
+      @media (max-width: 1050px) {
+        .grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+      }
+      @media (max-width: 600px) {
+        .app {
+          padding: 14px 12px 30px;
+        }
+        .grid {
+          grid-template-columns: 1fr;
+          gap: 14px;
+        }
+        .card {
+          min-height: 165px;
+          padding: 22px;
+        }
+        .hero {
+          padding: 22px;
+          border-radius: 18px;
+        }
+        .hero-content {
+          padding-right: 0;
+        }
+        .school-logo {
+          position: relative;
+          top: auto;
+          right: auto;
+          display: block;
+          width: 105px;
+          height: 105px;
+          margin: 0 auto 16px;
+        }
+        .toolbar {
+          align-items: stretch;
+        }
+        .homebtn {
+          width: 100%;
+        }
+        .drivebtn {
+          width: 100%;
+        }
+        .indicator-head {
+          padding: 15px;
+        }
+        .details {
+          padding: 16px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="app">
+      <section class="hero">
+        <img
+          class="school-logo"
+          src="LNHS_LOGO-removebg-preview.png"
+          alt="Lumbangan National High School logo"
+        />
+        <div class="hero-content">
+          <div class="eyebrow">School-Based Management</div>
+          <h1>Dimensions, Indicators, Sub-Indicators & MOVs</h1>
+          <p>
+            Select a dimension to explore its matched indicators, then open an
+            indicator to view its sub-indicator and MOVs. Click any MOV to open
+            the shared Google Form.
+          </p>
+        </div>
+      </section>
+      <div class="toolbar">
+        <input
+          id="search"
+          class="search"
+          type="search"
+          placeholder="Search dimensions, indicators, sub-indicators or MOVs…"
+        /><a
+          class="drivebtn"
+          href="https://drive.google.com/drive/folders/1a0-1mnuAEMrZJ5YFrb8uLXQ6FLXCz1TR2yXUQQ_fKehFKln_9khAHaIHN4i4VrxItfGxbJA4?usp=sharing"
+          target="_blank"
+          rel="noopener noreferrer"
+          title="Open the shared Google Drive folder in a new tab"
+          >View Uploaded Files</a
+        ><button id="home" class="homebtn">All Dimensions</button>
+      </div>
+      <div id="crumbs" class="crumbs"></div>
+      <section id="content"></section>
+      <footer class="footer">
+        <div class="footer-title">
+          Official School-Based Management Portal of Lumbangan National High
+          School
+        </div>
+        <div class="footer-meta">
+          © <span id="copyrightYear"></span> Lumbangan National High School. All
+          rights reserved. &nbsp;•&nbsp; Last updated:
+          <span id="currentDate"></span>
+        </div>
+        <div class="footer-credit">
+          Developed by Lino B. Manalo
+        </div>
+      </footer>
+    </main>
+    <script>
+      const DATA = {
+        "Curriculum and Teaching": [
+          {
+            no: 1,
+            indicator: "Grade 3 proficiency in language, literacy and numeracy",
+            subindicator:
+              "Assessment results monitored; interventions implemented",
+            movs: ["Phil-IRI", "EGRA", "Numeracy reports", "SFs"],
+          },
+          {
+            no: 2,
+            indicator: "NAT proficiency",
+            subindicator: "NAT review and analysis",
+            movs: ["NAT results", "action plan"],
+          },
+          {
+            no: 3,
+            indicator: "ALS completers certified",
+            subindicator: "ALS support conducted",
+            movs: ["ALS records", "certificates"],
+          },
+          {
+            no: 4,
+            indicator: "Contextualized learning materials",
+            subindicator: "Teachers develop localized materials",
+            movs: ["LMs", "lesson plans"],
+          },
+          {
+            no: 5,
+            indicator: "Remediation activities",
+            subindicator: "Reading/math remediation",
+            movs: ["Programs", "attendance", "reports"],
+          },
+          {
+            no: 6,
+            indicator: "Peace and core values integration",
+            subindicator: "Integrated in lessons",
+            movs: ["DLLs", "lesson plans"],
+          },
+          {
+            no: 7,
+            indicator: "Test item analysis",
+            subindicator: "Regular TIA conducted",
+            movs: ["TIA reports"],
+          },
+          {
+            no: 8,
+            indicator: "Industry engagement for TVL",
+            subindicator: "Partnerships established",
+            movs: ["MOA", "activity reports"],
+          },
+        ],
+        "Learning Environment": [
+          {
+            no: 9,
+            indicator: "Zero bullying incidence",
+            subindicator: "Cases addressed/prevented",
+            movs: ["Bullying reports", "logs"],
+          },
+          {
+            no: 10,
+            indicator: "Zero child abuse incidence",
+            subindicator: "Protection mechanisms",
+            movs: ["CPC reports"],
+          },
+          {
+            no: 11,
+            indicator: "Reduced dropout incidence",
+            subindicator: "Retention programs",
+            movs: ["Dropout data", "interventions"],
+          },
+          {
+            no: 12,
+            indicator: "Culture-sensitive activities",
+            subindicator: "IP/cultural activities",
+            movs: ["Programs", "photos"],
+          },
+          {
+            no: 13,
+            indicator: "Access for disadvantaged learners",
+            subindicator: "Inclusion mechanisms",
+            movs: ["Enrolment", "assistance records"],
+          },
+          {
+            no: 14,
+            indicator: "Functional ALS program",
+            subindicator: "ALS sessions conducted",
+            movs: ["ALS reports"],
+          },
+          {
+            no: 15,
+            indicator: "Functional Child Protection Committee",
+            subindicator: "Regular meetings",
+            movs: ["Orders", "minutes"],
+          },
+          {
+            no: 16,
+            indicator: "Functional DRRM plan",
+            subindicator: "Drills and preparedness",
+            movs: ["DRRM plan", "reports"],
+          },
+          {
+            no: 17,
+            indicator: "Mental wellness support",
+            subindicator: "Guidance activities",
+            movs: ["Program reports"],
+          },
+          {
+            no: 18,
+            indicator: "SPED/PWD-friendly facilities",
+            subindicator: "Accessible facilities",
+            movs: ["Photos", "inventory"],
+          },
+        ],
+        Leadership: [
+          {
+            no: 19,
+            indicator: "Strategic plan developed",
+            subindicator: "SIP preparation",
+            movs: ["SIP"],
+          },
+          {
+            no: 20,
+            indicator: "Functional planning team",
+            subindicator: "Meetings held",
+            movs: ["Composition", "minutes"],
+          },
+          {
+            no: 21,
+            indicator: "Functional SSG/SPG",
+            subindicator: "Student governance active",
+            movs: ["Election docs", "reports"],
+          },
+          {
+            no: 22,
+            indicator: "Innovation in frontline services",
+            subindicator: "Innovations implemented",
+            movs: ["Innovation docs"],
+          },
+        ],
+        Governance: [
+          {
+            no: 23,
+            indicator: "Strategic plan operationalized",
+            subindicator: "AIP implementation",
+            movs: ["AIP", "accomplishment"],
+          },
+          {
+            no: 24,
+            indicator: "Functional SGC",
+            subindicator: "Active council",
+            movs: ["SGC records"],
+          },
+          {
+            no: 25,
+            indicator: "Functional PTA",
+            subindicator: "PTA activities",
+            movs: ["PTA minutes"],
+          },
+          {
+            no: 26,
+            indicator: "Stakeholder partnerships",
+            subindicator: "Partnership programs",
+            movs: ["MOA/MOU"],
+          },
+          {
+            no: 27,
+            indicator: "Monitoring and evaluation",
+            subindicator: "PPA monitoring",
+            movs: ["M&E reports"],
+          },
+          {
+            no: 28,
+            indicator: "Stakeholder satisfaction",
+            subindicator: "Survey results",
+            movs: ["Survey reports"],
+          },
+        ],
+        "HR Development": [
+          {
+            no: 29,
+            indicator: "Personnel attain VS IPCRF",
+            subindicator: "Performance managed",
+            movs: ["IPCRF"],
+          },
+          {
+            no: 30,
+            indicator: "Very satisfactory OPCRF",
+            subindicator: "Office performance",
+            movs: ["OPCRF"],
+          },
+          {
+            no: 31,
+            indicator: "Needs-based LAC/L&D",
+            subindicator: "Capacity building",
+            movs: ["LAC reports"],
+          },
+          {
+            no: 32,
+            indicator: "Professional development",
+            subindicator: "Training participation",
+            movs: ["Certificates"],
+          },
+          {
+            no: 33,
+            indicator: "Recognition and rewards",
+            subindicator: "Recognition program",
+            movs: ["Awards records"],
+          },
+          {
+            no: 34,
+            indicator: "Timely salaries and benefits",
+            subindicator: "Monitoring concerns",
+            movs: ["Payroll records"],
+          },
+          {
+            no: 35,
+            indicator: "Equitable workload",
+            subindicator: "Fair assignments",
+            movs: ["Workload matrix"],
+          },
+        ],
+        Finance: [
+          {
+            no: 36,
+            indicator: "Infrastructure inspected",
+            subindicator: "Regular inspection",
+            movs: ["Inspection reports"],
+          },
+          {
+            no: 37,
+            indicator: "Infrastructure improved",
+            subindicator: "Improvement projects",
+            movs: ["Project reports"],
+          },
+          {
+            no: 38,
+            indicator: "Functional library",
+            subindicator: "Library services",
+            movs: ["Inventory", "utilization"],
+          },
+          {
+            no: 39,
+            indicator: "Functional water/electric/internet",
+            subindicator: "Essential utilities available",
+            movs: ["Bills", "photos"],
+          },
+          {
+            no: 40,
+            indicator: "Functional computer lab",
+            subindicator: "ICT access",
+            movs: ["Inventory", "schedules"],
+          },
+          {
+            no: 41,
+            indicator: "75-100% MOOE utilization",
+            subindicator: "Budget implementation",
+            movs: ["MOOE reports"],
+          },
+          {
+            no: 42,
+            indicator: "100% liquidation of utilized MOOE",
+            subindicator: "Timely liquidation",
+            movs: ["Liquidation reports"],
+          },
+        ],
+      };
+      const content = document.getElementById("content"),
+        crumbs = document.getElementById("crumbs"),
+        search = document.getElementById("search");
+      let currentDimension = null;
+
+      const today = new Date();
+      document.getElementById("copyrightYear").textContent =
+        today.getFullYear();
+      document.getElementById("currentDate").textContent =
+        today.toLocaleDateString("en-US", {
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+        });
+
+      // PASTE YOUR GOOGLE FORM LINK BETWEEN THE QUOTATION MARKS BELOW.
+      // Example: https://forms.gle/yourFormCode
+      const GOOGLE_FORM_URL = "https://forms.gle/XH1p4r3KfTBy8FwZ7";
+      const esc = (s) =>
+        String(s).replace(
+          /[&<>'"]/g,
+          (c) =>
+            ({
+              "&": "&amp;",
+              "<": "&lt;",
+              ">": "&gt;",
+              "'": "&#39;",
+              '"': "&quot;",
+            })[c],
+        );
+      function showDimensions(query = "") {
+        currentDimension = null;
+        document.body.classList.add("home-view");
+        const q = query.trim().toLowerCase();
+        crumbs.innerHTML = "<strong>All Dimensions</strong>";
+        const entries = Object.entries(DATA)
+          .map(([d, items]) => [
+            d,
+            items.filter((x) =>
+              [d, x.indicator, x.subindicator, ...x.movs]
+                .join(" ")
+                .toLowerCase()
+                .includes(q),
+            ),
+          ])
+          .filter(([d, items]) => !q || items.length);
+        if (!entries.length) {
+          content.innerHTML =
+            '<div class="empty">No matching records found.</div>';
+          return;
+        }
+        content.innerHTML =
+          '<div class="grid">' +
+          entries
+            .map(
+              ([d, items]) =>
+                `<button class="card" data-dim="${esc(d)}"><span class="count">${items.length} indicator${items.length === 1 ? "" : "s"}</span><h2>${esc(d)}</h2><p>Click to view matched indicators and their evidence.</p></button>`,
+            )
+            .join("") +
+          "</div>";
+        content
+          .querySelectorAll("[data-dim]")
+          .forEach(
+            (b) => (b.onclick = () => showDimension(b.dataset.dim, query)),
+          );
+      }
+      function showDimension(dim, query = "") {
+        currentDimension = dim;
+        document.body.classList.remove("home-view");
+        const q = query.trim().toLowerCase();
+        const items = DATA[dim].filter(
+          (x) =>
+            !q ||
+            [dim, x.indicator, x.subindicator, ...x.movs]
+              .join(" ")
+              .toLowerCase()
+              .includes(q),
+        );
+        crumbs.innerHTML = `<button id="backCrumb">All Dimensions</button> &nbsp;›&nbsp; <strong>${esc(dim)}</strong>`;
+        document.getElementById("backCrumb").onclick = () => {
+          search.value = "";
+          showDimensions();
+        };
+        if (!items.length) {
+          content.innerHTML =
+            '<div class="empty">No matching indicators in this dimension.</div>';
+          return;
+        }
+        content.innerHTML =
+          '<div class="indicator-list">' +
+          items
+            .map(
+              (x) =>
+                `<article class="indicator"><button class="indicator-head"><span class="num">${esc(x.no)}</span><span class="indicator-title">${esc(x.indicator)}</span><span class="chev">›</span></button><div class="details"><div><div class="section-label">Sub-Indicator / Observable Practice</div><div class="sub">${esc(x.subindicator)}</div></div><div><div class="section-label">Possible MOVs</div><div class="movs">${x.movs.map((m) => `<button type="button" class="pill" data-mov="${esc(m)}" data-no="${esc(x.no)}" title="Open Google Form for ${esc(m)}">📤 ${esc(m)}</button>`).join("")}</div></div></div></article>`,
+            )
+            .join("") +
+          "</div>";
+        content
+          .querySelectorAll(".indicator-head")
+          .forEach(
+            (btn) =>
+              (btn.onclick = () => btn.parentElement.classList.toggle("open")),
+          );
+        content.querySelectorAll("[data-mov]").forEach((btn) =>
+          btn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            openGoogleForm();
+          }),
+        );
+      }
+      function openGoogleForm() {
+        const url = GOOGLE_FORM_URL.trim();
+        if (!url || url === "PASTE_YOUR_GOOGLE_FORM_LINK_HERE") {
+          alert(
+            "Google Form link has not been added yet. Open this HTML file in a text editor, search for PASTE_YOUR_GOOGLE_FORM_LINK_HERE, and replace it with your Google Form URL.",
+          );
+          return;
+        }
+        if (!/^https:\/\/(forms\.gle|docs\.google\.com\/forms)\//i.test(url)) {
+          alert(
+            "Please use a valid Google Forms link beginning with https://forms.gle/ or https://docs.google.com/forms/.",
+          );
+          return;
+        }
+        window.open(url, "_blank", "noopener,noreferrer");
+      }
+
+      search.addEventListener("input", () =>
+        currentDimension ?
+          showDimension(currentDimension, search.value)
+        : showDimensions(search.value),
+      );
+      document.getElementById("home").onclick = () => {
+        search.value = "";
+        showDimensions();
+      };
+      showDimensions();
+    </script>
+  </body>
+</html>
